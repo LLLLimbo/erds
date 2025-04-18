@@ -1,0 +1,1891 @@
+{
+  "name": "iam_mgmt_erd",
+  "tables": [
+    {
+      "name": "access_key",
+      "type": "BASE TABLE",
+      "comment": "访问密钥",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "service_user_id",
+          "type": "int",
+          "nullable": false,
+          "comment": "所属服务用户"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "access_key_service_user_id_fk",
+          "def": "KEY access_key_service_user_id_fk (service_user_id) USING BTREE",
+          "table": "access_key",
+          "columns": [
+            "service_user_id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "access_key",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "access_key_service_user_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (service_user_id) REFERENCES service_user (id)",
+          "table": "access_key",
+          "referenced_table": "service_user",
+          "columns": [
+            "service_user_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "access_key",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `access_key` (\n  `id` int NOT NULL,\n  `service_user_id` int NOT NULL COMMENT '所属服务用户',\n  PRIMARY KEY (`id`),\n  KEY `access_key_service_user_id_fk` (`service_user_id`),\n  CONSTRAINT `access_key_service_user_id_fk` FOREIGN KEY (`service_user_id`) REFERENCES `service_user` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='访问密钥'"
+    },
+    {
+      "name": "application",
+      "type": "BASE TABLE",
+      "comment": "应用",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "application",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "application",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `application` (\n  `id` int NOT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='应用'"
+    },
+    {
+      "name": "feature",
+      "type": "BASE TABLE",
+      "comment": "功能",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "feature",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "feature",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `feature` (\n  `id` int NOT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='功能'"
+    },
+    {
+      "name": "layout",
+      "type": "BASE TABLE",
+      "comment": "应用菜单结构",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "app_id",
+          "type": "int",
+          "nullable": false,
+          "comment": "所属应用(产品)"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "layout_application_id_fk",
+          "def": "KEY layout_application_id_fk (app_id) USING BTREE",
+          "table": "layout",
+          "columns": [
+            "app_id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "layout",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "layout_application_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (app_id) REFERENCES application (id)",
+          "table": "layout",
+          "referenced_table": "application",
+          "columns": [
+            "app_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "layout",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `layout` (\n  `id` int NOT NULL,\n  `app_id` int NOT NULL COMMENT '所属应用(产品)',\n  PRIMARY KEY (`id`),\n  KEY `layout_application_id_fk` (`app_id`),\n  CONSTRAINT `layout_application_id_fk` FOREIGN KEY (`app_id`) REFERENCES `application` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='应用菜单结构'"
+    },
+    {
+      "name": "mapping_application_feature",
+      "type": "BASE TABLE",
+      "comment": "应用-功能关联",
+      "columns": [
+        {
+          "name": "app_id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "feature_id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "mapping_application_feature_application_id_fk",
+          "def": "KEY mapping_application_feature_application_id_fk (app_id) USING BTREE",
+          "table": "mapping_application_feature",
+          "columns": [
+            "app_id"
+          ]
+        },
+        {
+          "name": "mapping_application_feature_feature_id_fk",
+          "def": "KEY mapping_application_feature_feature_id_fk (feature_id) USING BTREE",
+          "table": "mapping_application_feature",
+          "columns": [
+            "feature_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "mapping_application_feature_application_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (app_id) REFERENCES application (id)",
+          "table": "mapping_application_feature",
+          "referenced_table": "application",
+          "columns": [
+            "app_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "mapping_application_feature_feature_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (feature_id) REFERENCES feature (id)",
+          "table": "mapping_application_feature",
+          "referenced_table": "feature",
+          "columns": [
+            "feature_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `mapping_application_feature` (\n  `app_id` int NOT NULL,\n  `feature_id` int NOT NULL,\n  KEY `mapping_application_feature_application_id_fk` (`app_id`),\n  KEY `mapping_application_feature_feature_id_fk` (`feature_id`),\n  CONSTRAINT `mapping_application_feature_application_id_fk` FOREIGN KEY (`app_id`) REFERENCES `application` (`id`),\n  CONSTRAINT `mapping_application_feature_feature_id_fk` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='应用-功能关联'"
+    },
+    {
+      "name": "mapping_feature_permission",
+      "type": "BASE TABLE",
+      "comment": "功能权限关联",
+      "columns": [
+        {
+          "name": "permission_id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "feature_id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "mapping_feature_permission_feature_id_fk",
+          "def": "KEY mapping_feature_permission_feature_id_fk (feature_id) USING BTREE",
+          "table": "mapping_feature_permission",
+          "columns": [
+            "feature_id"
+          ]
+        },
+        {
+          "name": "mapping_feature_permission_permission_id_fk",
+          "def": "KEY mapping_feature_permission_permission_id_fk (permission_id) USING BTREE",
+          "table": "mapping_feature_permission",
+          "columns": [
+            "permission_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "mapping_feature_permission_feature_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (feature_id) REFERENCES feature (id)",
+          "table": "mapping_feature_permission",
+          "referenced_table": "feature",
+          "columns": [
+            "feature_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "mapping_feature_permission_permission_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (permission_id) REFERENCES permission (id)",
+          "table": "mapping_feature_permission",
+          "referenced_table": "permission",
+          "columns": [
+            "permission_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `mapping_feature_permission` (\n  `permission_id` int NOT NULL,\n  `feature_id` int NOT NULL,\n  KEY `mapping_feature_permission_feature_id_fk` (`feature_id`),\n  KEY `mapping_feature_permission_permission_id_fk` (`permission_id`),\n  CONSTRAINT `mapping_feature_permission_feature_id_fk` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`),\n  CONSTRAINT `mapping_feature_permission_permission_id_fk` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='功能权限关联'"
+    },
+    {
+      "name": "mapping_layout_resource",
+      "type": "BASE TABLE",
+      "comment": "菜单-资源关联",
+      "columns": [
+        {
+          "name": "resource_id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "layout_id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "mapping_layout_resource_layout_id_fk",
+          "def": "KEY mapping_layout_resource_layout_id_fk (layout_id) USING BTREE",
+          "table": "mapping_layout_resource",
+          "columns": [
+            "layout_id"
+          ]
+        },
+        {
+          "name": "mapping_layout_resource_resource_id_fk",
+          "def": "KEY mapping_layout_resource_resource_id_fk (resource_id) USING BTREE",
+          "table": "mapping_layout_resource",
+          "columns": [
+            "resource_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "mapping_layout_resource_layout_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (layout_id) REFERENCES layout (id)",
+          "table": "mapping_layout_resource",
+          "referenced_table": "layout",
+          "columns": [
+            "layout_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "mapping_layout_resource_resource_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (resource_id) REFERENCES resource (id)",
+          "table": "mapping_layout_resource",
+          "referenced_table": "resource",
+          "columns": [
+            "resource_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `mapping_layout_resource` (\n  `resource_id` int NOT NULL,\n  `layout_id` int NOT NULL,\n  KEY `mapping_layout_resource_layout_id_fk` (`layout_id`),\n  KEY `mapping_layout_resource_resource_id_fk` (`resource_id`),\n  CONSTRAINT `mapping_layout_resource_layout_id_fk` FOREIGN KEY (`layout_id`) REFERENCES `layout` (`id`),\n  CONSTRAINT `mapping_layout_resource_resource_id_fk` FOREIGN KEY (`resource_id`) REFERENCES `resource` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='菜单-资源关联'"
+    },
+    {
+      "name": "mapping_service_role_feature",
+      "type": "BASE TABLE",
+      "comment": "服务角色-功能",
+      "columns": [
+        {
+          "name": "service_role_id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "feature_id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "mapping_service_role_feature_feature_id_fk",
+          "def": "KEY mapping_service_role_feature_feature_id_fk (feature_id) USING BTREE",
+          "table": "mapping_service_role_feature",
+          "columns": [
+            "feature_id"
+          ]
+        },
+        {
+          "name": "mapping_service_role_feature_service_role_id_fk",
+          "def": "KEY mapping_service_role_feature_service_role_id_fk (service_role_id) USING BTREE",
+          "table": "mapping_service_role_feature",
+          "columns": [
+            "service_role_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "mapping_service_role_feature_feature_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (feature_id) REFERENCES feature (id)",
+          "table": "mapping_service_role_feature",
+          "referenced_table": "feature",
+          "columns": [
+            "feature_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "mapping_service_role_feature_service_role_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (service_role_id) REFERENCES service_role (id)",
+          "table": "mapping_service_role_feature",
+          "referenced_table": "service_role",
+          "columns": [
+            "service_role_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `mapping_service_role_feature` (\n  `service_role_id` int NOT NULL,\n  `feature_id` int NOT NULL,\n  KEY `mapping_service_role_feature_feature_id_fk` (`feature_id`),\n  KEY `mapping_service_role_feature_service_role_id_fk` (`service_role_id`),\n  CONSTRAINT `mapping_service_role_feature_feature_id_fk` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`),\n  CONSTRAINT `mapping_service_role_feature_service_role_id_fk` FOREIGN KEY (`service_role_id`) REFERENCES `service_role` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='服务角色-功能'"
+    },
+    {
+      "name": "mapping_service_user_role",
+      "type": "BASE TABLE",
+      "comment": "服务用户-服务角色关联",
+      "columns": [
+        {
+          "name": "service_user_id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "service_role_id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "mapping_service_user_role_service_user_id_fk",
+          "def": "KEY mapping_service_user_role_service_user_id_fk (service_user_id) USING BTREE",
+          "table": "mapping_service_user_role",
+          "columns": [
+            "service_user_id"
+          ]
+        },
+        {
+          "name": "mapping_service_user_role_service_user_role_id_fk",
+          "def": "KEY mapping_service_user_role_service_user_role_id_fk (service_role_id) USING BTREE",
+          "table": "mapping_service_user_role",
+          "columns": [
+            "service_role_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "mapping_service_user_role_service_user_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (service_user_id) REFERENCES service_user (id)",
+          "table": "mapping_service_user_role",
+          "referenced_table": "service_user",
+          "columns": [
+            "service_user_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "mapping_service_user_role_service_user_role_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (service_role_id) REFERENCES service_role (id)",
+          "table": "mapping_service_user_role",
+          "referenced_table": "service_role",
+          "columns": [
+            "service_role_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `mapping_service_user_role` (\n  `service_user_id` int NOT NULL,\n  `service_role_id` int NOT NULL,\n  KEY `mapping_service_user_role_service_user_id_fk` (`service_user_id`),\n  KEY `mapping_service_user_role_service_user_role_id_fk` (`service_role_id`),\n  CONSTRAINT `mapping_service_user_role_service_user_id_fk` FOREIGN KEY (`service_user_id`) REFERENCES `service_user` (`id`),\n  CONSTRAINT `mapping_service_user_role_service_user_role_id_fk` FOREIGN KEY (`service_role_id`) REFERENCES `service_role` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='服务用户-服务角色关联'"
+    },
+    {
+      "name": "mapping_service_user_tenant",
+      "type": "BASE TABLE",
+      "comment": "租户-服务用户映射",
+      "columns": [
+        {
+          "name": "tenant_id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "service_user_id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "mapping_service_user_tenant_service_user_id_fk",
+          "def": "KEY mapping_service_user_tenant_service_user_id_fk (service_user_id) USING BTREE",
+          "table": "mapping_service_user_tenant",
+          "columns": [
+            "service_user_id"
+          ]
+        },
+        {
+          "name": "mapping_service_user_tenant_tenant_id_fk",
+          "def": "KEY mapping_service_user_tenant_tenant_id_fk (tenant_id) USING BTREE",
+          "table": "mapping_service_user_tenant",
+          "columns": [
+            "tenant_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "mapping_service_user_tenant_service_user_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (service_user_id) REFERENCES service_user (id)",
+          "table": "mapping_service_user_tenant",
+          "referenced_table": "service_user",
+          "columns": [
+            "service_user_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "mapping_service_user_tenant_tenant_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (tenant_id) REFERENCES tenant (id)",
+          "table": "mapping_service_user_tenant",
+          "referenced_table": "tenant",
+          "columns": [
+            "tenant_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `mapping_service_user_tenant` (\n  `tenant_id` int NOT NULL,\n  `service_user_id` int NOT NULL,\n  KEY `mapping_service_user_tenant_service_user_id_fk` (`service_user_id`),\n  KEY `mapping_service_user_tenant_tenant_id_fk` (`tenant_id`),\n  CONSTRAINT `mapping_service_user_tenant_service_user_id_fk` FOREIGN KEY (`service_user_id`) REFERENCES `service_user` (`id`),\n  CONSTRAINT `mapping_service_user_tenant_tenant_id_fk` FOREIGN KEY (`tenant_id`) REFERENCES `tenant` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='租户-服务用户映射'"
+    },
+    {
+      "name": "mapping_staff_role",
+      "type": "BASE TABLE",
+      "comment": "员工-角色关联",
+      "columns": [
+        {
+          "name": "staff_id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "role_id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "mapping_staff_role_staff_id_fk",
+          "def": "KEY mapping_staff_role_staff_id_fk (staff_id) USING BTREE",
+          "table": "mapping_staff_role",
+          "columns": [
+            "staff_id"
+          ]
+        },
+        {
+          "name": "mapping_staff_role_tenant_role_id_fk",
+          "def": "KEY mapping_staff_role_tenant_role_id_fk (role_id) USING BTREE",
+          "table": "mapping_staff_role",
+          "columns": [
+            "role_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "mapping_staff_role_staff_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (staff_id) REFERENCES staff (id)",
+          "table": "mapping_staff_role",
+          "referenced_table": "staff",
+          "columns": [
+            "staff_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "mapping_staff_role_tenant_role_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (role_id) REFERENCES tenant_role (id)",
+          "table": "mapping_staff_role",
+          "referenced_table": "tenant_role",
+          "columns": [
+            "role_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `mapping_staff_role` (\n  `staff_id` int NOT NULL,\n  `role_id` int NOT NULL,\n  KEY `mapping_staff_role_staff_id_fk` (`staff_id`),\n  KEY `mapping_staff_role_tenant_role_id_fk` (`role_id`),\n  CONSTRAINT `mapping_staff_role_staff_id_fk` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`),\n  CONSTRAINT `mapping_staff_role_tenant_role_id_fk` FOREIGN KEY (`role_id`) REFERENCES `tenant_role` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='员工-角色关联'"
+    },
+    {
+      "name": "mapping_system_role_feature",
+      "type": "BASE TABLE",
+      "comment": "系统角色-功能关联",
+      "columns": [
+        {
+          "name": "system_role_id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "feature_id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "mapping_system_role_feature_feature_id_fk",
+          "def": "KEY mapping_system_role_feature_feature_id_fk (feature_id) USING BTREE",
+          "table": "mapping_system_role_feature",
+          "columns": [
+            "feature_id"
+          ]
+        },
+        {
+          "name": "mapping_system_role_feature_system_role_id_fk",
+          "def": "KEY mapping_system_role_feature_system_role_id_fk (system_role_id) USING BTREE",
+          "table": "mapping_system_role_feature",
+          "columns": [
+            "system_role_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "mapping_system_role_feature_feature_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (feature_id) REFERENCES feature (id)",
+          "table": "mapping_system_role_feature",
+          "referenced_table": "feature",
+          "columns": [
+            "feature_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "mapping_system_role_feature_system_role_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (system_role_id) REFERENCES system_role (id)",
+          "table": "mapping_system_role_feature",
+          "referenced_table": "system_role",
+          "columns": [
+            "system_role_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `mapping_system_role_feature` (\n  `system_role_id` int NOT NULL,\n  `feature_id` int NOT NULL,\n  KEY `mapping_system_role_feature_feature_id_fk` (`feature_id`),\n  KEY `mapping_system_role_feature_system_role_id_fk` (`system_role_id`),\n  CONSTRAINT `mapping_system_role_feature_feature_id_fk` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`),\n  CONSTRAINT `mapping_system_role_feature_system_role_id_fk` FOREIGN KEY (`system_role_id`) REFERENCES `system_role` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统角色-功能关联'"
+    },
+    {
+      "name": "mapping_system_user_role",
+      "type": "BASE TABLE",
+      "comment": "系统用户-系统角色关联",
+      "columns": [
+        {
+          "name": "system_user_id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "system_role_id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "mapping_system_user_role_system_role_id_fk",
+          "def": "KEY mapping_system_user_role_system_role_id_fk (system_role_id) USING BTREE",
+          "table": "mapping_system_user_role",
+          "columns": [
+            "system_role_id"
+          ]
+        },
+        {
+          "name": "mapping_system_user_role_system_user_id_fk",
+          "def": "KEY mapping_system_user_role_system_user_id_fk (system_user_id) USING BTREE",
+          "table": "mapping_system_user_role",
+          "columns": [
+            "system_user_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "mapping_system_user_role_system_role_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (system_role_id) REFERENCES system_role (id)",
+          "table": "mapping_system_user_role",
+          "referenced_table": "system_role",
+          "columns": [
+            "system_role_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "mapping_system_user_role_system_user_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (system_user_id) REFERENCES system_user (id)",
+          "table": "mapping_system_user_role",
+          "referenced_table": "system_user",
+          "columns": [
+            "system_user_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `mapping_system_user_role` (\n  `system_user_id` int NOT NULL,\n  `system_role_id` int NOT NULL,\n  KEY `mapping_system_user_role_system_role_id_fk` (`system_role_id`),\n  KEY `mapping_system_user_role_system_user_id_fk` (`system_user_id`),\n  CONSTRAINT `mapping_system_user_role_system_role_id_fk` FOREIGN KEY (`system_role_id`) REFERENCES `system_role` (`id`),\n  CONSTRAINT `mapping_system_user_role_system_user_id_fk` FOREIGN KEY (`system_user_id`) REFERENCES `system_user` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统用户-系统角色关联'"
+    },
+    {
+      "name": "mapping_tenant_application",
+      "type": "BASE TABLE",
+      "comment": "租户-应用(产品)关联",
+      "columns": [
+        {
+          "name": "app_id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "tenant_id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "mapping_tenant_application_application_id_fk",
+          "def": "KEY mapping_tenant_application_application_id_fk (app_id) USING BTREE",
+          "table": "mapping_tenant_application",
+          "columns": [
+            "app_id"
+          ]
+        },
+        {
+          "name": "mapping_tenant_application_tenant_id_fk",
+          "def": "KEY mapping_tenant_application_tenant_id_fk (tenant_id) USING BTREE",
+          "table": "mapping_tenant_application",
+          "columns": [
+            "tenant_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "mapping_tenant_application_application_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (app_id) REFERENCES application (id)",
+          "table": "mapping_tenant_application",
+          "referenced_table": "application",
+          "columns": [
+            "app_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "mapping_tenant_application_tenant_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (tenant_id) REFERENCES tenant (id)",
+          "table": "mapping_tenant_application",
+          "referenced_table": "tenant",
+          "columns": [
+            "tenant_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `mapping_tenant_application` (\n  `app_id` int NOT NULL,\n  `tenant_id` int NOT NULL,\n  KEY `mapping_tenant_application_application_id_fk` (`app_id`),\n  KEY `mapping_tenant_application_tenant_id_fk` (`tenant_id`),\n  CONSTRAINT `mapping_tenant_application_application_id_fk` FOREIGN KEY (`app_id`) REFERENCES `application` (`id`),\n  CONSTRAINT `mapping_tenant_application_tenant_id_fk` FOREIGN KEY (`tenant_id`) REFERENCES `tenant` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='租户-应用(产品)关联'"
+    },
+    {
+      "name": "mapping_tenant_feature",
+      "type": "BASE TABLE",
+      "comment": "租户-功能关联",
+      "columns": [
+        {
+          "name": "tenant_id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "feature_id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "mapping_tenant_feature_feature_id_fk",
+          "def": "KEY mapping_tenant_feature_feature_id_fk (feature_id) USING BTREE",
+          "table": "mapping_tenant_feature",
+          "columns": [
+            "feature_id"
+          ]
+        },
+        {
+          "name": "mapping_tenant_feature_tenant_id_fk",
+          "def": "KEY mapping_tenant_feature_tenant_id_fk (tenant_id) USING BTREE",
+          "table": "mapping_tenant_feature",
+          "columns": [
+            "tenant_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "mapping_tenant_feature_feature_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (feature_id) REFERENCES feature (id)",
+          "table": "mapping_tenant_feature",
+          "referenced_table": "feature",
+          "columns": [
+            "feature_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "mapping_tenant_feature_tenant_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (tenant_id) REFERENCES tenant (id)",
+          "table": "mapping_tenant_feature",
+          "referenced_table": "tenant",
+          "columns": [
+            "tenant_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `mapping_tenant_feature` (\n  `tenant_id` int NOT NULL,\n  `feature_id` int NOT NULL,\n  KEY `mapping_tenant_feature_feature_id_fk` (`feature_id`),\n  KEY `mapping_tenant_feature_tenant_id_fk` (`tenant_id`),\n  CONSTRAINT `mapping_tenant_feature_feature_id_fk` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`),\n  CONSTRAINT `mapping_tenant_feature_tenant_id_fk` FOREIGN KEY (`tenant_id`) REFERENCES `tenant` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='租户-功能关联'"
+    },
+    {
+      "name": "mapping_tenant_role_feature",
+      "type": "BASE TABLE",
+      "comment": "租户角色-功能关联",
+      "columns": [
+        {
+          "name": "tenant_role_id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "feature_id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "mapping_tenant_role_feature_feature_id_fk",
+          "def": "KEY mapping_tenant_role_feature_feature_id_fk (feature_id) USING BTREE",
+          "table": "mapping_tenant_role_feature",
+          "columns": [
+            "feature_id"
+          ]
+        },
+        {
+          "name": "mapping_tenant_role_feature_tenant_role_id_fk",
+          "def": "KEY mapping_tenant_role_feature_tenant_role_id_fk (tenant_role_id) USING BTREE",
+          "table": "mapping_tenant_role_feature",
+          "columns": [
+            "tenant_role_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "mapping_tenant_role_feature_feature_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (feature_id) REFERENCES feature (id)",
+          "table": "mapping_tenant_role_feature",
+          "referenced_table": "feature",
+          "columns": [
+            "feature_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "mapping_tenant_role_feature_tenant_role_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (tenant_role_id) REFERENCES tenant_role (id)",
+          "table": "mapping_tenant_role_feature",
+          "referenced_table": "tenant_role",
+          "columns": [
+            "tenant_role_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `mapping_tenant_role_feature` (\n  `tenant_role_id` int NOT NULL,\n  `feature_id` int NOT NULL,\n  KEY `mapping_tenant_role_feature_feature_id_fk` (`feature_id`),\n  KEY `mapping_tenant_role_feature_tenant_role_id_fk` (`tenant_role_id`),\n  CONSTRAINT `mapping_tenant_role_feature_feature_id_fk` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`),\n  CONSTRAINT `mapping_tenant_role_feature_tenant_role_id_fk` FOREIGN KEY (`tenant_role_id`) REFERENCES `tenant_role` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='租户角色-功能关联'"
+    },
+    {
+      "name": "organization",
+      "type": "BASE TABLE",
+      "comment": "组织",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "tenant_id",
+          "type": "int",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "organization_tenant_id_fk",
+          "def": "KEY organization_tenant_id_fk (tenant_id) USING BTREE",
+          "table": "organization",
+          "columns": [
+            "tenant_id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "organization",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "organization_tenant_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (tenant_id) REFERENCES tenant (id)",
+          "table": "organization",
+          "referenced_table": "tenant",
+          "columns": [
+            "tenant_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "organization",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `organization` (\n  `id` int NOT NULL,\n  `tenant_id` int DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  KEY `organization_tenant_id_fk` (`tenant_id`),\n  CONSTRAINT `organization_tenant_id_fk` FOREIGN KEY (`tenant_id`) REFERENCES `tenant` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='组织'"
+    },
+    {
+      "name": "permission",
+      "type": "BASE TABLE",
+      "comment": "权限",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "app_id",
+          "type": "int",
+          "nullable": false,
+          "comment": "所属应用(产品)"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "permission_application_id_fk",
+          "def": "KEY permission_application_id_fk (app_id) USING BTREE",
+          "table": "permission",
+          "columns": [
+            "app_id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "permission",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "permission_application_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (app_id) REFERENCES application (id)",
+          "table": "permission",
+          "referenced_table": "application",
+          "columns": [
+            "app_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "permission",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `permission` (\n  `id` int NOT NULL,\n  `app_id` int NOT NULL COMMENT '所属应用(产品)',\n  PRIMARY KEY (`id`),\n  KEY `permission_application_id_fk` (`app_id`),\n  CONSTRAINT `permission_application_id_fk` FOREIGN KEY (`app_id`) REFERENCES `application` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='权限'"
+    },
+    {
+      "name": "resource",
+      "type": "BASE TABLE",
+      "comment": "资源",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "permission_id",
+          "type": "int",
+          "nullable": false,
+          "comment": "关联权限"
+        },
+        {
+          "name": "app_id",
+          "type": "int",
+          "nullable": false,
+          "comment": "所属应用(产品)"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "resource_application_id_fk",
+          "def": "KEY resource_application_id_fk (app_id) USING BTREE",
+          "table": "resource",
+          "columns": [
+            "app_id"
+          ]
+        },
+        {
+          "name": "resource_permission_id_fk",
+          "def": "KEY resource_permission_id_fk (permission_id) USING BTREE",
+          "table": "resource",
+          "columns": [
+            "permission_id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "resource",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "resource",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "resource_application_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (app_id) REFERENCES application (id)",
+          "table": "resource",
+          "referenced_table": "application",
+          "columns": [
+            "app_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "resource_permission_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (permission_id) REFERENCES permission (id)",
+          "table": "resource",
+          "referenced_table": "permission",
+          "columns": [
+            "permission_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `resource` (\n  `id` int NOT NULL,\n  `permission_id` int NOT NULL COMMENT '关联权限',\n  `app_id` int NOT NULL COMMENT '所属应用(产品)',\n  PRIMARY KEY (`id`),\n  KEY `resource_permission_id_fk` (`permission_id`),\n  KEY `resource_application_id_fk` (`app_id`),\n  CONSTRAINT `resource_application_id_fk` FOREIGN KEY (`app_id`) REFERENCES `application` (`id`),\n  CONSTRAINT `resource_permission_id_fk` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='资源'"
+    },
+    {
+      "name": "service_role",
+      "type": "BASE TABLE",
+      "comment": "服务角色",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "service_role",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "service_role",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `service_role` (\n  `id` int NOT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='服务角色'"
+    },
+    {
+      "name": "service_user",
+      "type": "BASE TABLE",
+      "comment": "服务用户",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "service_user",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "service_user",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `service_user` (\n  `id` int NOT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='服务用户'"
+    },
+    {
+      "name": "staff",
+      "type": "BASE TABLE",
+      "comment": "员工",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "org_id",
+          "type": "int",
+          "nullable": true,
+          "comment": "所属组织"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "staff_organization_id_fk",
+          "def": "KEY staff_organization_id_fk (org_id) USING BTREE",
+          "table": "staff",
+          "columns": [
+            "org_id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "staff",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "staff",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "staff_organization_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (org_id) REFERENCES organization (id)",
+          "table": "staff",
+          "referenced_table": "organization",
+          "columns": [
+            "org_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `staff` (\n  `id` int NOT NULL,\n  `org_id` int DEFAULT NULL COMMENT '所属组织',\n  PRIMARY KEY (`id`),\n  KEY `staff_organization_id_fk` (`org_id`),\n  CONSTRAINT `staff_organization_id_fk` FOREIGN KEY (`org_id`) REFERENCES `organization` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='员工'"
+    },
+    {
+      "name": "system_role",
+      "type": "BASE TABLE",
+      "comment": "系统角色",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "system_role",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "system_role",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `system_role` (\n  `id` int NOT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统角色'"
+    },
+    {
+      "name": "system_user",
+      "type": "BASE TABLE",
+      "comment": "系统用户",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "system_user",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "system_user",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `system_user` (\n  `id` int NOT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统用户'"
+    },
+    {
+      "name": "tenant",
+      "type": "BASE TABLE",
+      "comment": "租户",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "tenant",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "tenant",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `tenant` (\n  `id` int NOT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='租户'"
+    },
+    {
+      "name": "tenant_role",
+      "type": "BASE TABLE",
+      "comment": "租户自定义角色",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "org_id",
+          "type": "int",
+          "nullable": false,
+          "comment": "所属组织"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "tenant_role_tenant_id_fk",
+          "def": "KEY tenant_role_tenant_id_fk (org_id) USING BTREE",
+          "table": "tenant_role",
+          "columns": [
+            "org_id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "tenant_role",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "tenant_role",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "tenant_role_tenant_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (org_id) REFERENCES tenant (id)",
+          "table": "tenant_role",
+          "referenced_table": "tenant",
+          "columns": [
+            "org_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `tenant_role` (\n  `id` int NOT NULL,\n  `org_id` int NOT NULL COMMENT '所属组织',\n  PRIMARY KEY (`id`),\n  KEY `tenant_role_tenant_id_fk` (`org_id`),\n  CONSTRAINT `tenant_role_tenant_id_fk` FOREIGN KEY (`org_id`) REFERENCES `tenant` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='租户自定义角色'"
+    }
+  ],
+  "relations": [
+    {
+      "table": "access_key",
+      "columns": [
+        "service_user_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "service_user",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (service_user_id) REFERENCES service_user (id)"
+    },
+    {
+      "table": "layout",
+      "columns": [
+        "app_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "application",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (app_id) REFERENCES application (id)"
+    },
+    {
+      "table": "mapping_application_feature",
+      "columns": [
+        "app_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "application",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (app_id) REFERENCES application (id)"
+    },
+    {
+      "table": "mapping_application_feature",
+      "columns": [
+        "feature_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "feature",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (feature_id) REFERENCES feature (id)"
+    },
+    {
+      "table": "mapping_feature_permission",
+      "columns": [
+        "feature_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "feature",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (feature_id) REFERENCES feature (id)"
+    },
+    {
+      "table": "mapping_feature_permission",
+      "columns": [
+        "permission_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "permission",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (permission_id) REFERENCES permission (id)"
+    },
+    {
+      "table": "mapping_layout_resource",
+      "columns": [
+        "layout_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "layout",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (layout_id) REFERENCES layout (id)"
+    },
+    {
+      "table": "mapping_layout_resource",
+      "columns": [
+        "resource_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "resource",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (resource_id) REFERENCES resource (id)"
+    },
+    {
+      "table": "mapping_service_role_feature",
+      "columns": [
+        "feature_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "feature",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (feature_id) REFERENCES feature (id)"
+    },
+    {
+      "table": "mapping_service_role_feature",
+      "columns": [
+        "service_role_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "service_role",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (service_role_id) REFERENCES service_role (id)"
+    },
+    {
+      "table": "mapping_service_user_role",
+      "columns": [
+        "service_user_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "service_user",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (service_user_id) REFERENCES service_user (id)"
+    },
+    {
+      "table": "mapping_service_user_role",
+      "columns": [
+        "service_role_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "service_role",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (service_role_id) REFERENCES service_role (id)"
+    },
+    {
+      "table": "mapping_service_user_tenant",
+      "columns": [
+        "service_user_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "service_user",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (service_user_id) REFERENCES service_user (id)"
+    },
+    {
+      "table": "mapping_service_user_tenant",
+      "columns": [
+        "tenant_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "tenant",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (tenant_id) REFERENCES tenant (id)"
+    },
+    {
+      "table": "mapping_staff_role",
+      "columns": [
+        "staff_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "staff",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (staff_id) REFERENCES staff (id)"
+    },
+    {
+      "table": "mapping_staff_role",
+      "columns": [
+        "role_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "tenant_role",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (role_id) REFERENCES tenant_role (id)"
+    },
+    {
+      "table": "mapping_system_role_feature",
+      "columns": [
+        "feature_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "feature",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (feature_id) REFERENCES feature (id)"
+    },
+    {
+      "table": "mapping_system_role_feature",
+      "columns": [
+        "system_role_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "system_role",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (system_role_id) REFERENCES system_role (id)"
+    },
+    {
+      "table": "mapping_system_user_role",
+      "columns": [
+        "system_role_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "system_role",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (system_role_id) REFERENCES system_role (id)"
+    },
+    {
+      "table": "mapping_system_user_role",
+      "columns": [
+        "system_user_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "system_user",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (system_user_id) REFERENCES system_user (id)"
+    },
+    {
+      "table": "mapping_tenant_application",
+      "columns": [
+        "app_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "application",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (app_id) REFERENCES application (id)"
+    },
+    {
+      "table": "mapping_tenant_application",
+      "columns": [
+        "tenant_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "tenant",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (tenant_id) REFERENCES tenant (id)"
+    },
+    {
+      "table": "mapping_tenant_feature",
+      "columns": [
+        "feature_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "feature",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (feature_id) REFERENCES feature (id)"
+    },
+    {
+      "table": "mapping_tenant_feature",
+      "columns": [
+        "tenant_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "tenant",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (tenant_id) REFERENCES tenant (id)"
+    },
+    {
+      "table": "mapping_tenant_role_feature",
+      "columns": [
+        "feature_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "feature",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (feature_id) REFERENCES feature (id)"
+    },
+    {
+      "table": "mapping_tenant_role_feature",
+      "columns": [
+        "tenant_role_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "tenant_role",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (tenant_role_id) REFERENCES tenant_role (id)"
+    },
+    {
+      "table": "organization",
+      "columns": [
+        "tenant_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "tenant",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "zero_or_one",
+      "def": "FOREIGN KEY (tenant_id) REFERENCES tenant (id)"
+    },
+    {
+      "table": "permission",
+      "columns": [
+        "app_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "application",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (app_id) REFERENCES application (id)"
+    },
+    {
+      "table": "resource",
+      "columns": [
+        "app_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "application",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (app_id) REFERENCES application (id)"
+    },
+    {
+      "table": "resource",
+      "columns": [
+        "permission_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "permission",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (permission_id) REFERENCES permission (id)"
+    },
+    {
+      "table": "staff",
+      "columns": [
+        "org_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "organization",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "zero_or_one",
+      "def": "FOREIGN KEY (org_id) REFERENCES organization (id)"
+    },
+    {
+      "table": "tenant_role",
+      "columns": [
+        "org_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "tenant",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (org_id) REFERENCES tenant (id)"
+    }
+  ],
+  "driver": {
+    "name": "mysql",
+    "database_version": "8.0.40",
+    "meta": {
+      "dict": {
+        "Functions": "Stored procedures and functions"
+      }
+    }
+  }
+}
