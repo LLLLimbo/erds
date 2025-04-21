@@ -71,47 +71,26 @@
           "name": "id",
           "type": "int",
           "nullable": false
-        }
-      ],
-      "indexes": [
+        },
         {
-          "name": "PRIMARY",
-          "def": "PRIMARY KEY (id) USING BTREE",
-          "table": "application",
-          "columns": [
-            "id"
-          ]
-        }
-      ],
-      "constraints": [
-        {
-          "name": "PRIMARY",
-          "type": "PRIMARY KEY",
-          "def": "PRIMARY KEY (id)",
-          "table": "application",
-          "columns": [
-            "id"
-          ]
-        }
-      ],
-      "def": "CREATE TABLE `application` (\n  `id` int NOT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='应用'"
-    },
-    {
-      "name": "feature",
-      "type": "BASE TABLE",
-      "comment": "功能",
-      "columns": [
-        {
-          "name": "id",
+          "name": "tenant_id",
           "type": "int",
           "nullable": false
         }
       ],
       "indexes": [
         {
+          "name": "application_tenant_id_fk",
+          "def": "KEY application_tenant_id_fk (tenant_id) USING BTREE",
+          "table": "application",
+          "columns": [
+            "tenant_id"
+          ]
+        },
+        {
           "name": "PRIMARY",
           "def": "PRIMARY KEY (id) USING BTREE",
-          "table": "feature",
+          "table": "application",
           "columns": [
             "id"
           ]
@@ -119,19 +98,32 @@
       ],
       "constraints": [
         {
+          "name": "application_tenant_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (tenant_id) REFERENCES tenant (id)",
+          "table": "application",
+          "referenced_table": "tenant",
+          "columns": [
+            "tenant_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
           "name": "PRIMARY",
           "type": "PRIMARY KEY",
           "def": "PRIMARY KEY (id)",
-          "table": "feature",
+          "table": "application",
           "columns": [
             "id"
           ]
         }
       ],
-      "def": "CREATE TABLE `feature` (\n  `id` int NOT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='功能'"
+      "def": "CREATE TABLE `application` (\n  `id` int NOT NULL,\n  `tenant_id` int NOT NULL,\n  PRIMARY KEY (`id`),\n  KEY `application_tenant_id_fk` (`tenant_id`),\n  CONSTRAINT `application_tenant_id_fk` FOREIGN KEY (`tenant_id`) REFERENCES `tenant` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='应用'"
     },
     {
-      "name": "layout",
+      "name": "application_layout",
       "type": "BASE TABLE",
       "comment": "应用菜单结构",
       "columns": [
@@ -144,33 +136,33 @@
           "name": "app_id",
           "type": "int",
           "nullable": false,
-          "comment": "所属应用(产品)"
+          "comment": "所属应用"
         }
       ],
       "indexes": [
         {
-          "name": "layout_application_id_fk",
-          "def": "KEY layout_application_id_fk (app_id) USING BTREE",
-          "table": "layout",
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "application_layout",
           "columns": [
-            "app_id"
+            "id"
           ]
         },
         {
-          "name": "PRIMARY",
-          "def": "PRIMARY KEY (id) USING BTREE",
-          "table": "layout",
+          "name": "application_layout_pk_2",
+          "def": "UNIQUE KEY application_layout_pk_2 (app_id) USING BTREE",
+          "table": "application_layout",
           "columns": [
-            "id"
+            "app_id"
           ]
         }
       ],
       "constraints": [
         {
-          "name": "layout_application_id_fk",
+          "name": "application_layout_application_id_fk",
           "type": "FOREIGN KEY",
           "def": "FOREIGN KEY (app_id) REFERENCES application (id)",
-          "table": "layout",
+          "table": "application_layout",
           "referenced_table": "application",
           "columns": [
             "app_id"
@@ -180,16 +172,86 @@
           ]
         },
         {
+          "name": "application_layout_pk_2",
+          "type": "UNIQUE",
+          "def": "UNIQUE KEY application_layout_pk_2 (app_id)",
+          "table": "application_layout",
+          "columns": [
+            "app_id"
+          ]
+        },
+        {
           "name": "PRIMARY",
           "type": "PRIMARY KEY",
           "def": "PRIMARY KEY (id)",
-          "table": "layout",
+          "table": "application_layout",
           "columns": [
             "id"
           ]
         }
       ],
-      "def": "CREATE TABLE `layout` (\n  `id` int NOT NULL,\n  `app_id` int NOT NULL COMMENT '所属应用(产品)',\n  PRIMARY KEY (`id`),\n  KEY `layout_application_id_fk` (`app_id`),\n  CONSTRAINT `layout_application_id_fk` FOREIGN KEY (`app_id`) REFERENCES `application` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='应用菜单结构'"
+      "def": "CREATE TABLE `application_layout` (\n  `id` int NOT NULL,\n  `app_id` int NOT NULL COMMENT '所属应用',\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `application_layout_pk_2` (`app_id`),\n  CONSTRAINT `application_layout_application_id_fk` FOREIGN KEY (`app_id`) REFERENCES `application` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='应用菜单结构'"
+    },
+    {
+      "name": "feature",
+      "type": "BASE TABLE",
+      "comment": "功能",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "product_id",
+          "type": "int",
+          "nullable": false,
+          "comment": "所属产品"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "feature_product_id_fk",
+          "def": "KEY feature_product_id_fk (product_id) USING BTREE",
+          "table": "feature",
+          "columns": [
+            "product_id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "feature",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "feature_product_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (product_id) REFERENCES product (id)",
+          "table": "feature",
+          "referenced_table": "product",
+          "columns": [
+            "product_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "feature",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `feature` (\n  `id` int NOT NULL,\n  `product_id` int NOT NULL COMMENT '所属产品',\n  PRIMARY KEY (`id`),\n  KEY `feature_product_id_fk` (`product_id`),\n  CONSTRAINT `feature_product_id_fk` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='功能'"
     },
     {
       "name": "mapping_application_feature",
@@ -253,7 +315,71 @@
           ]
         }
       ],
-      "def": "CREATE TABLE `mapping_application_feature` (\n  `app_id` int NOT NULL,\n  `feature_id` int NOT NULL,\n  KEY `mapping_application_feature_application_id_fk` (`app_id`),\n  KEY `mapping_application_feature_feature_id_fk` (`feature_id`),\n  CONSTRAINT `mapping_application_feature_application_id_fk` FOREIGN KEY (`app_id`) REFERENCES `application` (`id`),\n  CONSTRAINT `mapping_application_feature_feature_id_fk` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='应用-功能关联'"
+      "def": "CREATE TABLE `mapping_application_feature` (\n  `app_id` int NOT NULL,\n  `feature_id` int NOT NULL,\n  KEY `mapping_application_feature_feature_id_fk` (`feature_id`),\n  KEY `mapping_application_feature_application_id_fk` (`app_id`),\n  CONSTRAINT `mapping_application_feature_application_id_fk` FOREIGN KEY (`app_id`) REFERENCES `application` (`id`),\n  CONSTRAINT `mapping_application_feature_feature_id_fk` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='应用-功能关联'"
+    },
+    {
+      "name": "mapping_application_layout_resource",
+      "type": "BASE TABLE",
+      "comment": "应用菜单结构-菜单关联",
+      "columns": [
+        {
+          "name": "layout_id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "resource_id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "mapping_application_layout_resource_application_layout_id_fk",
+          "def": "KEY mapping_application_layout_resource_application_layout_id_fk (layout_id) USING BTREE",
+          "table": "mapping_application_layout_resource",
+          "columns": [
+            "layout_id"
+          ]
+        },
+        {
+          "name": "mapping_application_layout_resource_resource_id_fk",
+          "def": "KEY mapping_application_layout_resource_resource_id_fk (resource_id) USING BTREE",
+          "table": "mapping_application_layout_resource",
+          "columns": [
+            "resource_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "mapping_application_layout_resource_application_layout_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (layout_id) REFERENCES application_layout (id)",
+          "table": "mapping_application_layout_resource",
+          "referenced_table": "application_layout",
+          "columns": [
+            "layout_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "mapping_application_layout_resource_resource_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (resource_id) REFERENCES resource (id)",
+          "table": "mapping_application_layout_resource",
+          "referenced_table": "resource",
+          "columns": [
+            "resource_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `mapping_application_layout_resource` (\n  `layout_id` int NOT NULL,\n  `resource_id` int NOT NULL,\n  KEY `mapping_application_layout_resource_application_layout_id_fk` (`layout_id`),\n  KEY `mapping_application_layout_resource_resource_id_fk` (`resource_id`),\n  CONSTRAINT `mapping_application_layout_resource_application_layout_id_fk` FOREIGN KEY (`layout_id`) REFERENCES `application_layout` (`id`),\n  CONSTRAINT `mapping_application_layout_resource_resource_id_fk` FOREIGN KEY (`resource_id`) REFERENCES `resource` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='应用菜单结构-菜单关联'"
     },
     {
       "name": "mapping_feature_permission",
@@ -320,9 +446,9 @@
       "def": "CREATE TABLE `mapping_feature_permission` (\n  `permission_id` int NOT NULL,\n  `feature_id` int NOT NULL,\n  KEY `mapping_feature_permission_feature_id_fk` (`feature_id`),\n  KEY `mapping_feature_permission_permission_id_fk` (`permission_id`),\n  CONSTRAINT `mapping_feature_permission_feature_id_fk` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`),\n  CONSTRAINT `mapping_feature_permission_permission_id_fk` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='功能权限关联'"
     },
     {
-      "name": "mapping_layout_resource",
+      "name": "mapping_product_layout_resource",
       "type": "BASE TABLE",
-      "comment": "菜单-资源关联",
+      "comment": "产品菜单-资源关联",
       "columns": [
         {
           "name": "resource_id",
@@ -337,17 +463,17 @@
       ],
       "indexes": [
         {
-          "name": "mapping_layout_resource_layout_id_fk",
-          "def": "KEY mapping_layout_resource_layout_id_fk (layout_id) USING BTREE",
-          "table": "mapping_layout_resource",
+          "name": "mapping_product_layout_resource_product_layout_id_fk",
+          "def": "KEY mapping_product_layout_resource_product_layout_id_fk (layout_id) USING BTREE",
+          "table": "mapping_product_layout_resource",
           "columns": [
             "layout_id"
           ]
         },
         {
-          "name": "mapping_layout_resource_resource_id_fk",
-          "def": "KEY mapping_layout_resource_resource_id_fk (resource_id) USING BTREE",
-          "table": "mapping_layout_resource",
+          "name": "mapping_product_layout_resource_resource_id_fk",
+          "def": "KEY mapping_product_layout_resource_resource_id_fk (resource_id) USING BTREE",
+          "table": "mapping_product_layout_resource",
           "columns": [
             "resource_id"
           ]
@@ -355,11 +481,11 @@
       ],
       "constraints": [
         {
-          "name": "mapping_layout_resource_layout_id_fk",
+          "name": "mapping_product_layout_resource_product_layout_id_fk",
           "type": "FOREIGN KEY",
-          "def": "FOREIGN KEY (layout_id) REFERENCES layout (id)",
-          "table": "mapping_layout_resource",
-          "referenced_table": "layout",
+          "def": "FOREIGN KEY (layout_id) REFERENCES product_layout (id)",
+          "table": "mapping_product_layout_resource",
+          "referenced_table": "product_layout",
           "columns": [
             "layout_id"
           ],
@@ -368,10 +494,10 @@
           ]
         },
         {
-          "name": "mapping_layout_resource_resource_id_fk",
+          "name": "mapping_product_layout_resource_resource_id_fk",
           "type": "FOREIGN KEY",
           "def": "FOREIGN KEY (resource_id) REFERENCES resource (id)",
-          "table": "mapping_layout_resource",
+          "table": "mapping_product_layout_resource",
           "referenced_table": "resource",
           "columns": [
             "resource_id"
@@ -381,7 +507,7 @@
           ]
         }
       ],
-      "def": "CREATE TABLE `mapping_layout_resource` (\n  `resource_id` int NOT NULL,\n  `layout_id` int NOT NULL,\n  KEY `mapping_layout_resource_layout_id_fk` (`layout_id`),\n  KEY `mapping_layout_resource_resource_id_fk` (`resource_id`),\n  CONSTRAINT `mapping_layout_resource_layout_id_fk` FOREIGN KEY (`layout_id`) REFERENCES `layout` (`id`),\n  CONSTRAINT `mapping_layout_resource_resource_id_fk` FOREIGN KEY (`resource_id`) REFERENCES `resource` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='菜单-资源关联'"
+      "def": "CREATE TABLE `mapping_product_layout_resource` (\n  `resource_id` int NOT NULL,\n  `layout_id` int NOT NULL,\n  KEY `mapping_product_layout_resource_product_layout_id_fk` (`layout_id`),\n  KEY `mapping_product_layout_resource_resource_id_fk` (`resource_id`),\n  CONSTRAINT `mapping_product_layout_resource_product_layout_id_fk` FOREIGN KEY (`layout_id`) REFERENCES `product_layout` (`id`),\n  CONSTRAINT `mapping_product_layout_resource_resource_id_fk` FOREIGN KEY (`resource_id`) REFERENCES `resource` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='产品菜单-资源关联'"
     },
     {
       "name": "mapping_service_role_feature",
@@ -773,7 +899,7 @@
       "comment": "租户-应用(产品)关联",
       "columns": [
         {
-          "name": "app_id",
+          "name": "product_id",
           "type": "int",
           "nullable": false
         },
@@ -785,11 +911,11 @@
       ],
       "indexes": [
         {
-          "name": "mapping_tenant_application_application_id_fk",
-          "def": "KEY mapping_tenant_application_application_id_fk (app_id) USING BTREE",
+          "name": "mapping_tenant_application_product_id_fk",
+          "def": "KEY mapping_tenant_application_product_id_fk (product_id) USING BTREE",
           "table": "mapping_tenant_application",
           "columns": [
-            "app_id"
+            "product_id"
           ]
         },
         {
@@ -803,13 +929,13 @@
       ],
       "constraints": [
         {
-          "name": "mapping_tenant_application_application_id_fk",
+          "name": "mapping_tenant_application_product_id_fk",
           "type": "FOREIGN KEY",
-          "def": "FOREIGN KEY (app_id) REFERENCES application (id)",
+          "def": "FOREIGN KEY (product_id) REFERENCES product (id)",
           "table": "mapping_tenant_application",
-          "referenced_table": "application",
+          "referenced_table": "product",
           "columns": [
-            "app_id"
+            "product_id"
           ],
           "referenced_columns": [
             "id"
@@ -829,7 +955,7 @@
           ]
         }
       ],
-      "def": "CREATE TABLE `mapping_tenant_application` (\n  `app_id` int NOT NULL,\n  `tenant_id` int NOT NULL,\n  KEY `mapping_tenant_application_application_id_fk` (`app_id`),\n  KEY `mapping_tenant_application_tenant_id_fk` (`tenant_id`),\n  CONSTRAINT `mapping_tenant_application_application_id_fk` FOREIGN KEY (`app_id`) REFERENCES `application` (`id`),\n  CONSTRAINT `mapping_tenant_application_tenant_id_fk` FOREIGN KEY (`tenant_id`) REFERENCES `tenant` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='租户-应用(产品)关联'"
+      "def": "CREATE TABLE `mapping_tenant_application` (\n  `product_id` int NOT NULL,\n  `tenant_id` int NOT NULL,\n  KEY `mapping_tenant_application_tenant_id_fk` (`tenant_id`),\n  KEY `mapping_tenant_application_product_id_fk` (`product_id`),\n  CONSTRAINT `mapping_tenant_application_product_id_fk` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`),\n  CONSTRAINT `mapping_tenant_application_tenant_id_fk` FOREIGN KEY (`tenant_id`) REFERENCES `tenant` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='租户-应用(产品)关联'"
     },
     {
       "name": "mapping_tenant_feature",
@@ -1030,19 +1156,19 @@
           "nullable": false
         },
         {
-          "name": "app_id",
+          "name": "product_id",
           "type": "int",
           "nullable": false,
-          "comment": "所属应用(产品)"
+          "comment": "所属产品"
         }
       ],
       "indexes": [
         {
-          "name": "permission_application_id_fk",
-          "def": "KEY permission_application_id_fk (app_id) USING BTREE",
+          "name": "permission_product_id_fk",
+          "def": "KEY permission_product_id_fk (product_id) USING BTREE",
           "table": "permission",
           "columns": [
-            "app_id"
+            "product_id"
           ]
         },
         {
@@ -1056,13 +1182,13 @@
       ],
       "constraints": [
         {
-          "name": "permission_application_id_fk",
+          "name": "permission_product_id_fk",
           "type": "FOREIGN KEY",
-          "def": "FOREIGN KEY (app_id) REFERENCES application (id)",
+          "def": "FOREIGN KEY (product_id) REFERENCES product (id)",
           "table": "permission",
-          "referenced_table": "application",
+          "referenced_table": "product",
           "columns": [
-            "app_id"
+            "product_id"
           ],
           "referenced_columns": [
             "id"
@@ -1078,7 +1204,111 @@
           ]
         }
       ],
-      "def": "CREATE TABLE `permission` (\n  `id` int NOT NULL,\n  `app_id` int NOT NULL COMMENT '所属应用(产品)',\n  PRIMARY KEY (`id`),\n  KEY `permission_application_id_fk` (`app_id`),\n  CONSTRAINT `permission_application_id_fk` FOREIGN KEY (`app_id`) REFERENCES `application` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='权限'"
+      "def": "CREATE TABLE `permission` (\n  `id` int NOT NULL,\n  `product_id` int NOT NULL COMMENT '所属产品',\n  PRIMARY KEY (`id`),\n  KEY `permission_product_id_fk` (`product_id`),\n  CONSTRAINT `permission_product_id_fk` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='权限'"
+    },
+    {
+      "name": "product",
+      "type": "BASE TABLE",
+      "comment": "产品",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "product",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "product",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `product` (\n  `id` int NOT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='产品'"
+    },
+    {
+      "name": "product_layout",
+      "type": "BASE TABLE",
+      "comment": "产品菜单结构",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "product_id",
+          "type": "int",
+          "nullable": false,
+          "comment": "所属产品"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "product_layout",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "product_layout_pk",
+          "def": "UNIQUE KEY product_layout_pk (product_id) USING BTREE",
+          "table": "product_layout",
+          "columns": [
+            "product_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "product_layout",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "product_layout_pk",
+          "type": "UNIQUE",
+          "def": "UNIQUE KEY product_layout_pk (product_id)",
+          "table": "product_layout",
+          "columns": [
+            "product_id"
+          ]
+        },
+        {
+          "name": "product_layout_product_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (product_id) REFERENCES product (id)",
+          "table": "product_layout",
+          "referenced_table": "product",
+          "columns": [
+            "product_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `product_layout` (\n  `id` int NOT NULL,\n  `product_id` int NOT NULL COMMENT '所属产品',\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `product_layout_pk` (`product_id`),\n  CONSTRAINT `product_layout_product_id_fk` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='产品菜单结构'"
     },
     {
       "name": "resource",
@@ -1097,27 +1327,27 @@
           "comment": "关联权限"
         },
         {
-          "name": "app_id",
+          "name": "product_id",
           "type": "int",
           "nullable": false,
-          "comment": "所属应用(产品)"
+          "comment": "所属产品"
         }
       ],
       "indexes": [
-        {
-          "name": "resource_application_id_fk",
-          "def": "KEY resource_application_id_fk (app_id) USING BTREE",
-          "table": "resource",
-          "columns": [
-            "app_id"
-          ]
-        },
         {
           "name": "resource_permission_id_fk",
           "def": "KEY resource_permission_id_fk (permission_id) USING BTREE",
           "table": "resource",
           "columns": [
             "permission_id"
+          ]
+        },
+        {
+          "name": "resource_product_id_fk",
+          "def": "KEY resource_product_id_fk (product_id) USING BTREE",
+          "table": "resource",
+          "columns": [
+            "product_id"
           ]
         },
         {
@@ -1140,19 +1370,6 @@
           ]
         },
         {
-          "name": "resource_application_id_fk",
-          "type": "FOREIGN KEY",
-          "def": "FOREIGN KEY (app_id) REFERENCES application (id)",
-          "table": "resource",
-          "referenced_table": "application",
-          "columns": [
-            "app_id"
-          ],
-          "referenced_columns": [
-            "id"
-          ]
-        },
-        {
           "name": "resource_permission_id_fk",
           "type": "FOREIGN KEY",
           "def": "FOREIGN KEY (permission_id) REFERENCES permission (id)",
@@ -1164,9 +1381,22 @@
           "referenced_columns": [
             "id"
           ]
+        },
+        {
+          "name": "resource_product_id_fk",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (product_id) REFERENCES product (id)",
+          "table": "resource",
+          "referenced_table": "product",
+          "columns": [
+            "product_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
         }
       ],
-      "def": "CREATE TABLE `resource` (\n  `id` int NOT NULL,\n  `permission_id` int NOT NULL COMMENT '关联权限',\n  `app_id` int NOT NULL COMMENT '所属应用(产品)',\n  PRIMARY KEY (`id`),\n  KEY `resource_permission_id_fk` (`permission_id`),\n  KEY `resource_application_id_fk` (`app_id`),\n  CONSTRAINT `resource_application_id_fk` FOREIGN KEY (`app_id`) REFERENCES `application` (`id`),\n  CONSTRAINT `resource_permission_id_fk` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='资源'"
+      "def": "CREATE TABLE `resource` (\n  `id` int NOT NULL,\n  `permission_id` int NOT NULL COMMENT '关联权限',\n  `product_id` int NOT NULL COMMENT '所属产品',\n  PRIMARY KEY (`id`),\n  KEY `resource_permission_id_fk` (`permission_id`),\n  KEY `resource_product_id_fk` (`product_id`),\n  CONSTRAINT `resource_permission_id_fk` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`id`),\n  CONSTRAINT `resource_product_id_fk` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='资源'"
     },
     {
       "name": "service_role",
@@ -1476,17 +1706,43 @@
       "def": "FOREIGN KEY (service_user_id) REFERENCES service_user (id)"
     },
     {
-      "table": "layout",
+      "table": "application",
+      "columns": [
+        "tenant_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "tenant",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (tenant_id) REFERENCES tenant (id)"
+    },
+    {
+      "table": "application_layout",
       "columns": [
         "app_id"
       ],
-      "cardinality": "zero_or_more",
+      "cardinality": "zero_or_one",
       "parent_table": "application",
       "parent_columns": [
         "id"
       ],
       "parent_cardinality": "exactly_one",
       "def": "FOREIGN KEY (app_id) REFERENCES application (id)"
+    },
+    {
+      "table": "feature",
+      "columns": [
+        "product_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "product",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (product_id) REFERENCES product (id)"
     },
     {
       "table": "mapping_application_feature",
@@ -1513,6 +1769,32 @@
       ],
       "parent_cardinality": "exactly_one",
       "def": "FOREIGN KEY (feature_id) REFERENCES feature (id)"
+    },
+    {
+      "table": "mapping_application_layout_resource",
+      "columns": [
+        "layout_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "application_layout",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (layout_id) REFERENCES application_layout (id)"
+    },
+    {
+      "table": "mapping_application_layout_resource",
+      "columns": [
+        "resource_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "resource",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (resource_id) REFERENCES resource (id)"
     },
     {
       "table": "mapping_feature_permission",
@@ -1541,20 +1823,20 @@
       "def": "FOREIGN KEY (permission_id) REFERENCES permission (id)"
     },
     {
-      "table": "mapping_layout_resource",
+      "table": "mapping_product_layout_resource",
       "columns": [
         "layout_id"
       ],
       "cardinality": "zero_or_more",
-      "parent_table": "layout",
+      "parent_table": "product_layout",
       "parent_columns": [
         "id"
       ],
       "parent_cardinality": "exactly_one",
-      "def": "FOREIGN KEY (layout_id) REFERENCES layout (id)"
+      "def": "FOREIGN KEY (layout_id) REFERENCES product_layout (id)"
     },
     {
-      "table": "mapping_layout_resource",
+      "table": "mapping_product_layout_resource",
       "columns": [
         "resource_id"
       ],
@@ -1725,15 +2007,15 @@
     {
       "table": "mapping_tenant_application",
       "columns": [
-        "app_id"
+        "product_id"
       ],
       "cardinality": "zero_or_more",
-      "parent_table": "application",
+      "parent_table": "product",
       "parent_columns": [
         "id"
       ],
       "parent_cardinality": "exactly_one",
-      "def": "FOREIGN KEY (app_id) REFERENCES application (id)"
+      "def": "FOREIGN KEY (product_id) REFERENCES product (id)"
     },
     {
       "table": "mapping_tenant_application",
@@ -1816,28 +2098,28 @@
     {
       "table": "permission",
       "columns": [
-        "app_id"
+        "product_id"
       ],
       "cardinality": "zero_or_more",
-      "parent_table": "application",
+      "parent_table": "product",
       "parent_columns": [
         "id"
       ],
       "parent_cardinality": "exactly_one",
-      "def": "FOREIGN KEY (app_id) REFERENCES application (id)"
+      "def": "FOREIGN KEY (product_id) REFERENCES product (id)"
     },
     {
-      "table": "resource",
+      "table": "product_layout",
       "columns": [
-        "app_id"
+        "product_id"
       ],
-      "cardinality": "zero_or_more",
-      "parent_table": "application",
+      "cardinality": "zero_or_one",
+      "parent_table": "product",
       "parent_columns": [
         "id"
       ],
       "parent_cardinality": "exactly_one",
-      "def": "FOREIGN KEY (app_id) REFERENCES application (id)"
+      "def": "FOREIGN KEY (product_id) REFERENCES product (id)"
     },
     {
       "table": "resource",
@@ -1851,6 +2133,19 @@
       ],
       "parent_cardinality": "exactly_one",
       "def": "FOREIGN KEY (permission_id) REFERENCES permission (id)"
+    },
+    {
+      "table": "resource",
+      "columns": [
+        "product_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "product",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (product_id) REFERENCES product (id)"
     },
     {
       "table": "staff",
